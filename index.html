@@ -1,0 +1,1365 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#09090b">
+    <meta name="description" content="AnimeCloud Ultimate - مرجع انیمه با طراحی مدرن">
+    <title>AnimeCloud Ultimate | دنیای انیمه</title>
+
+    <!-- Telegram Mini App JS -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+    <!-- Tailwind CSS (via CDN for portability) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        dark: '#050505',
+                        darker: '#020202',
+                        surface: '#121215',
+                        primary: 'var(--color-primary)',
+                        primaryGlow: 'var(--color-primary-glow)',
+                        accent: 'var(--color-accent)',
+                    },
+                    fontFamily: {
+                        vazir: ['Vazirmatn', 'sans-serif'],
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-glow': 'pulseGlow 4s ease-in-out infinite',
+                        'slide-up': 'slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                        'fade-in': 'fadeIn 0.4s ease-out forwards',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        },
+                        pulseGlow: {
+                            '0%, 100%': { opacity: 0.6, boxShadow: '0 0 20px var(--color-primary-glow)' },
+                            '50%': { opacity: 0.3, boxShadow: '0 0 10px var(--color-primary-glow)' },
+                        },
+                        slideUp: {
+                            '0%': { transform: 'translateY(20px)', opacity: 0 },
+                            '100%': { transform: 'translateY(0)', opacity: 1 },
+                        },
+                        fadeIn: {
+                            '0%': { opacity: 0 },
+                            '100%': { opacity: 1 },
+                        }
+                    }
+                }
+            }
+        };
+    </script>
+
+    <!-- Assets -->
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
+
+    <style>
+        /* --- Core Variables & Theming --- */
+        :root {
+            --color-primary: #6366f1; /* Indigo Default */
+            --color-primary-glow: rgba(99, 102, 241, 0.4);
+            --color-accent: #ec4899;
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --glass-bg: rgba(18, 18, 21, 0.7);
+        }
+
+        /* Theme Variants */
+        body.theme-emerald { --color-primary: #10b981; --color-primary-glow: rgba(16, 185, 129, 0.4); --color-accent: #3b82f6; }
+        body.theme-rose { --color-primary: #f43f5e; --color-primary-glow: rgba(244, 63, 94, 0.4); --color-accent: #f59e0b; }
+        body.theme-amber { --color-primary: #f59e0b; --color-primary-glow: rgba(245, 158, 11, 0.4); --color-accent: #8b5cf6; }
+        body.theme-cyan { --color-primary: #06b6d4; --color-primary-glow: rgba(6, 182, 212, 0.4); --color-accent: #ec4899; }
+
+        body {
+            font-family: 'Vazirmatn', sans-serif;
+            background-color: var(--tg-theme-bg-color, #050505);
+            color: var(--tg-theme-text-color, #fafafa);
+            overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Reduced Motion Accessibility */
+        body.reduced-motion * {
+            animation-duration: 0.001ms !important;
+            transition-duration: 0.001ms !important;
+            scroll-behavior: auto !important;
+        }
+
+        /* --- Ambient Background System --- */
+        #ambient-bg {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100vh;
+            z-index: -2;
+            background-size: cover; background-position: center;
+            filter: blur(60px) brightness(0.3) saturate(1.4);
+            opacity: 0.8;
+            transition: background-image 1.2s ease-in-out;
+            mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 90%);
+            -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 90%);
+        }
+        
+        /* --- Glassmorphism --- */
+        .glass {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px) saturate(180%);
+            -webkit-backdrop-filter: blur(16px) saturate(180%);
+            border: 1px solid var(--glass-border);
+        }
+        
+        .glass-heavy {
+            background: rgba(10, 10, 12, 0.85);
+            backdrop-filter: blur(24px) saturate(180%);
+            -webkit-backdrop-filter: blur(24px) saturate(180%);
+            border-top: 1px solid rgba(255,255,255,0.08);
+            box-shadow: 0 -10px 40px rgba(0,0,0,0.5);
+        }
+
+        /* --- Utilities --- */
+        .text-glow { text-shadow: 0 0 25px var(--color-primary-glow); }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        /* Custom Scrollbar for desktop */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.15); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.3); }
+
+        /* Card Effects */
+        .card-hover { transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .card-hover:hover { transform: translateY(-8px) scale(1.02); }
+        .card-hover:hover img { transform: scale(1.1); }
+        .card-hover img { transition: transform 0.6s ease; }
+
+        /* Swiper Pagination */
+        .swiper-pagination-bullet { background: white; opacity: 0.3; transition: 0.3s; width: 6px; height: 6px; }
+        .swiper-pagination-bullet-active { background: var(--color-primary); width: 20px; border-radius: 10px; opacity: 1; }
+
+        /* Loader */
+        .spinner {
+            width: 40px; height: 40px;
+            border: 3px solid rgba(255,255,255,0.1);
+            border-left-color: var(--color-primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+    
+        /* --- AnimeCloud Logo Animation --- */
+        .logo-animated {
+            position: relative;
+            display: inline-block;
+            background-image: linear-gradient(120deg, var(--color-primary), var(--color-accent), #ffffff, var(--color-primary));
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            color: transparent;
+            animation: logoGradient 8s ease-in-out infinite;
+            letter-spacing: .03em;
+            text-shadow: 0 0 18px var(--color-primary-glow);
+        }
+
+        .logo-animated::after {
+            content: '';
+            position: absolute;
+            inset: -6px;
+            border-radius: 999px;
+            border: 1px solid rgba(255,255,255,0.08);
+            box-shadow: 0 0 24px rgba(0,0,0,0.7);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity .4s ease, transform .4s ease;
+        }
+
+        .nav-logo:hover .logo-animated::after {
+            opacity: 1;
+            transform: scale(1.04);
+        }
+
+        @keyframes logoGradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Mask for modal header image */
+        .mask-image-gradient {
+            mask-image: linear-gradient(to top,
+                rgba(0,0,0,0.25) 0%,
+                rgba(0,0,0,0.85) 40%,
+                #000 100%);
+            -webkit-mask-image: linear-gradient(to top,
+                rgba(0,0,0,0.25) 0%,
+                rgba(0,0,0,0.85) 40%,
+                #000 100%);
+        }
+
+        /* Intro overlay transition */
+        #intro-overlay {
+            transition: opacity 0.7s ease, transform 0.7s ease;
+        }
+
+    </style>
+</head>
+<body class="antialiased pb-28 selection:bg-primary selection:text-white transition-colors duration-500">
+
+
+    <!-- Intro / Splash Screen -->
+    <div id="intro-overlay" class="fixed inset-0 z-[999] flex items-center justify-center bg-gradient-to-br from-black via-dark to-surface">
+        <div class="text-center space-y-5">
+            <div class="relative inline-flex items-center justify-center mb-2">
+                <div class="w-24 h-24 rounded-3xl bg-gradient-to-tr from-primary to-accent flex items-center justify-center shadow-2xl shadow-primary/40 overflow-hidden animate-float">
+                    <i class="fa-solid fa-cloud-moon text-3xl text-white drop-shadow-xl"></i>
+                    <div class="absolute inset-0 bg-white/10 mix-blend-screen animate-pulse-glow pointer-events-none"></div>
+                </div>
+            </div>
+            <h1 class="text-3xl md:text-5xl font-black tracking-tight">
+                <span class="logo-animated">AnimeCloud</span>
+            </h1>
+            <p class="text-sm md:text-base text-gray-400">خوش آمدی به دنیای ابری انیمه‌ها ☁️</p>
+            <p class="text-[11px] text-gray-500">در حال آماده‌سازی پیشنهادهای شخصی‌سازی شده...</p>
+        </div>
+    </div>
+
+    <!-- Ambient Dynamic Background -->
+    <div id="ambient-bg"></div>
+    <div class="fixed inset-0 z-[-1] bg-gradient-to-t from-darker via-dark/80 to-transparent pointer-events-none"></div>
+
+    <!-- Header / Navbar -->
+    <nav class="fixed top-0 inset-x-0 z-50 glass border-b-0 px-6 py-4 flex justify-between items-center transition-all duration-300 rounded-b-3xl mx-2 mt-2 shadow-2xl" id="navbar">
+        <div class="flex items-center gap-3 cursor-pointer nav-logo" onclick="Router.navigate('home')">
+            <div class="relative w-10 h-10 flex items-center justify-center bg-gradient-to-tr from-primary to-accent rounded-xl shadow-lg overflow-hidden animate-float">
+                <i class="fa-solid fa-cloud-moon text-white text-base drop-shadow"></i>
+                <div class="absolute inset-0 bg-white/10 rounded-xl animate-pulse-glow pointer-events-none"></div>
+            </div>
+            <div class="flex flex-col">
+                <h1 class="font-black text-xl tracking-tighter leading-none">
+                    <span class="logo-animated">AnimeCloud</span>
+                </h1>
+                <span class="text-[10px] text-gray-400 font-bold tracking-[0.2em] uppercase">Ultimate</span>
+            </div>
+        </div>
+        <div class="flex items-center gap-3">
+            <button onclick="UI.toggleSettings()" class="w-10 h-10 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center border border-white/5 transition relative overflow-hidden group">
+                <img src="https://api.dicebear.com/7.x/notionists/svg?seed=Felix" alt="Profile" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition">
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main id="app-container" class="container mx-auto px-4 pt-28 max-w-7xl min-h-screen">
+        
+        <!-- VIEW: HOME -->
+        <section id="view-home" class="page-view animate-slide-up">
+            
+            <!-- Hero Slider -->
+            <div class="relative mb-12 group rounded-[32px] overflow-hidden shadow-2xl shadow-black/50 border border-white/10">
+                <div class="swiper mainSwiper w-full h-[50vh] md:h-[65vh]">
+                    <div class="swiper-wrapper" id="hero-wrapper">
+                        <div class="swiper-slide flex items-center justify-center bg-surface">
+                            <div class="spinner"></div>
+                        </div>
+                    </div>
+                    <!-- Gradient Overlay -->
+                    <div class="absolute bottom-0 left-0 right-0 h-48 bg-gradient-to-t from-darker via-dark/80 to-transparent z-10"></div>
+                    <div class="swiper-pagination !bottom-8 !left-8 !w-auto z-20"></div>
+                </div>
+            </div>
+
+            <!-- Categories / Filter -->
+            <div class="sticky top-24 z-40 py-2 -mx-4 px-4 bg-dark/80 backdrop-blur-xl mb-8 border-b border-white/5 transition-all" id="filter-bar">
+                <div class="flex gap-3 overflow-x-auto no-scrollbar" id="genre-filters">
+                    <button data-genre="all" class="filter-btn active whitespace-nowrap px-6 py-2.5 rounded-xl text-sm font-bold border border-transparent transition-all shadow-lg bg-primary text-white">
+                        <i class="fa-solid fa-border-all mr-2"></i>همه
+                    </button>
+                    <button data-genre="Action" class="filter-btn whitespace-nowrap px-6 py-2.5 rounded-xl text-sm font-medium bg-surface border border-white/10 text-gray-400 hover:text-white transition-all">اکشن</button>
+                    <button data-genre="Romance" class="filter-btn whitespace-nowrap px-6 py-2.5 rounded-xl text-sm font-medium bg-surface border border-white/10 text-gray-400 hover:text-white transition-all">عاشقانه</button>
+                    <button data-genre="Fantasy" class="filter-btn whitespace-nowrap px-6 py-2.5 rounded-xl text-sm font-medium bg-surface border border-white/10 text-gray-400 hover:text-white transition-all">فانتزی</button>
+                    <button data-genre="Comedy" class="filter-btn whitespace-nowrap px-6 py-2.5 rounded-xl text-sm font-medium bg-surface border border-white/10 text-gray-400 hover:text-white transition-all">کمدی</button>
+                    <button data-genre="Drama" class="filter-btn whitespace-nowrap px-6 py-2.5 rounded-xl text-sm font-medium bg-surface border border-white/10 text-gray-400 hover:text-white transition-all">درام</button>
+                </div>
+            </div>
+
+            <!-- Section: Trending -->
+            <div class="mb-12">
+                <div class="flex items-end justify-between mb-6 px-1 border-r-4 border-primary pr-3">
+                    <div>
+                        <h2 class="text-2xl font-black text-white">برترین‌های فصل</h2>
+                        <p class="text-xs text-gray-400 mt-1">پرطرفدارترین انیمه‌های در حال پخش</p>
+                    </div>
+                    <button onclick="Router.navigate('search')" class="text-primary text-sm font-bold hover:brightness-125 transition flex items-center gap-1 group">
+                        بیشتر <i class="fa-solid fa-chevron-left text-xs group-hover:-translate-x-1 transition-transform"></i>
+                    </button>
+                </div>
+                <div class="relative group">
+                    <div class="flex gap-5 overflow-x-auto pb-8 px-2 no-scrollbar scroll-smooth" id="trending-row">
+                        <!-- Skeletons -->
+                        <div class="min-w-[160px] h-[240px] bg-white/5 rounded-2xl animate-pulse"></div>
+                        <div class="min-w-[160px] h-[240px] bg-white/5 rounded-2xl animate-pulse"></div>
+                        <div class="min-w-[160px] h-[240px] bg-white/5 rounded-2xl animate-pulse"></div>
+                    </div>
+                    <!-- Fade edges -->
+                    <div class="absolute top-0 right-0 bottom-8 w-16 bg-gradient-to-l from-dark to-transparent pointer-events-none"></div>
+                    <div class="absolute top-0 left-0 bottom-8 w-16 bg-gradient-to-r from-dark to-transparent pointer-events-none"></div>
+                </div>
+            </div>
+
+
+            <!-- Section: Continue Watching (History) -->
+            <div id="continue-section" class="mb-12 hidden">
+                <div class="flex items-center justify-between mb-6 px-1 border-r-4 border-emerald-400 pr-3">
+                    <div>
+                        <h2 class="text-2xl font-black text-white">ادامه تماشا</h2>
+                        <p class="text-xs text-gray-400 mt-1">براساس آخرین انیمه‌هایی که دیدی</p>
+                    </div>
+                    <button onclick="Router.navigate('library')" class="text-emerald-400 text-sm font-bold hover:brightness-125 transition flex items-center gap-1 group">
+                        کتابخانه <i class="fa-solid fa-chevron-left text-xs group-hover:-translate-x-1 transition-transform"></i>
+                    </button>
+                </div>
+                <div class="relative group">
+                    <div class="flex gap-5 overflow-x-auto pb-8 px-2 no-scrollbar scroll-smooth" id="continue-row">
+                        <!-- Filled dynamically from history -->
+                    </div>
+                    <div class="absolute top-0 right-0 bottom-8 w-16 bg-gradient-to-l from-dark to-transparent pointer-events-none"></div>
+                    <div class="absolute top-0 left-0 bottom-8 w-16 bg-gradient-to-r from-dark to-transparent pointer-events-none"></div>
+                </div>
+            </div>
+
+            <!-- Section: Top All Time -->
+            <div>
+                <div class="flex items-center justify-between mb-6 px-1 border-r-4 border-accent pr-3">
+                    <h2 class="text-2xl font-black text-white">شاهکارها</h2>
+                    <select id="sort-select" class="bg-surface border border-white/10 text-xs rounded-lg px-3 py-2 outline-none focus:border-primary text-gray-300">
+                        <option value="score">امتیاز بالا</option>
+                        <option value="popularity">محبوب‌ترین</option>
+                        <option value="favorites">علاقه‌مندی‌ها</option>
+                    </select>
+                </div>
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5 md:gap-6" id="top-grid">
+                    <!-- Cards injected here -->
+                </div>
+                <div class="mt-10 flex justify-center">
+                    <button onclick="App.loadMoreTopAnime()" class="px-8 py-3 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 hover:border-primary/50 hover:text-primary transition-all text-sm font-bold flex items-center gap-2 group">
+                        <span id="load-more-text">بارگذاری بیشتر</span>
+                        <i class="fa-solid fa-arrow-down group-hover:translate-y-1 transition-transform"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- VIEW: SEARCH -->
+        <section id="view-search" class="page-view hidden pt-2 animate-slide-up">
+            <div class="glass p-2 rounded-2xl mb-8 flex items-center relative z-20 shadow-xl">
+                <div class="pl-4 pr-3 text-gray-400"><i class="fa-solid fa-magnifying-glass text-xl"></i></div>
+                <input type="text" id="search-input" class="w-full bg-transparent border-none text-white py-3 px-2 focus:ring-0 placeholder-gray-500 text-lg font-medium" placeholder="جستجوی انیمه...">
+                <button onclick="document.getElementById('search-filter-panel').classList.toggle('hidden')" class="p-3 bg-white/5 rounded-xl text-gray-400 hover:text-white hover:bg-white/10 transition">
+                    <i class="fa-solid fa-sliders"></i>
+                </button>
+            </div>
+
+            <!-- Advanced Filters -->
+            <div id="search-filter-panel" class="hidden mb-8 bg-surface p-5 rounded-2xl border border-white/5 grid grid-cols-2 gap-4 text-sm animate-fade-in">
+                <div>
+                    <label class="block text-gray-500 mb-2 text-xs font-bold">وضعیت پخش</label>
+                    <select id="filter-status" class="w-full bg-dark border border-white/10 rounded-xl p-3 text-gray-300 outline-none focus:border-primary">
+                        <option value="">همه</option>
+                        <option value="airing">در حال پخش</option>
+                        <option value="complete">پایان یافته</option>
+                        <option value="upcoming">به زودی</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-gray-500 mb-2 text-xs font-bold">فرمت</label>
+                    <select id="filter-type" class="w-full bg-dark border border-white/10 rounded-xl p-3 text-gray-300 outline-none focus:border-primary">
+                        <option value="">همه</option>
+                        <option value="tv">سریال</option>
+                        <option value="movie">سینمایی</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="search-results" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-5 min-h-[50vh]">
+                <div class="col-span-full flex flex-col items-center justify-center text-gray-600 opacity-50 py-20">
+                    <i class="fa-brands fa-searchengin text-7xl mb-4"></i>
+                    <p class="text-lg">نام انیمه را جستجو کنید...</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- VIEW: LIBRARY -->
+        <section id="view-library" class="page-view hidden animate-slide-up">
+            <div class="flex gap-8 mb-8 border-b border-white/10 pb-1">
+                <button onclick="UI.switchLibraryTab('favs')" id="lib-tab-favs" class="text-xl font-black text-white border-b-2 border-primary pb-3 px-2 transition-colors">علاقه‌مندی‌ها</button>
+                <button onclick="UI.switchLibraryTab('history')" id="lib-tab-history" class="text-xl font-bold text-gray-500 hover:text-gray-300 pb-3 px-2 transition-colors">تاریخچه</button>
+            </div>
+
+            <div id="lib-content-favs" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-5 animate-fade-in">
+                <!-- Favorites -->
+            </div>
+
+            <div id="lib-content-history" class="hidden grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-5 animate-fade-in">
+                <!-- History -->
+            </div>
+        </section>
+
+    </main>
+
+
+    <!-- Random Anime Floating Button -->
+    <button id="random-anime-btn"
+            onclick="App.openRandomAnime()"
+            class="fixed bottom-28 right-5 z-40 w-12 h-12 rounded-2xl bg-primary text-white flex items-center justify-center shadow-2xl shadow-primary/40 border border-white/10 hover:translate-y-1 hover:rotate-3 transition-all">
+        <i class="fa-solid fa-shuffle text-lg"></i>
+    </button>
+
+    <!-- Bottom Navigation Dock -->
+    <div class="fixed bottom-6 left-0 right-0 flex justify-center z-40 pointer-events-none">
+        <div class="glass-heavy px-6 py-3 rounded-full flex items-center gap-8 shadow-2xl shadow-black/80 pointer-events-auto border border-white/10 scale-95 md:scale-100 transition-transform">
+            
+            <button onclick="Router.navigate('home')" class="nav-item active group relative w-12 h-12 flex flex-col items-center justify-center transition-all duration-300">
+                <div class="w-10 h-10 rounded-2xl bg-white/5 group-[.active]:bg-primary group-[.active]:text-white text-gray-400 flex items-center justify-center text-xl transition-all shadow-lg group-[.active]:shadow-primary/40 group-[.active]:-translate-y-3">
+                    <i class="fa-solid fa-house"></i>
+                </div>
+                <span class="absolute -bottom-2 text-[9px] font-bold opacity-0 group-[.active]:opacity-100 transition-all text-gray-300 translate-y-2 group-[.active]:translate-y-0">خانه</span>
+            </button>
+
+            <button onclick="Router.navigate('search')" class="nav-item group relative w-12 h-12 flex flex-col items-center justify-center transition-all duration-300">
+                <div class="w-10 h-10 rounded-2xl bg-white/5 group-[.active]:bg-primary group-[.active]:text-white text-gray-400 flex items-center justify-center text-xl transition-all shadow-lg group-[.active]:shadow-primary/40 group-[.active]:-translate-y-3">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </div>
+                <span class="absolute -bottom-2 text-[9px] font-bold opacity-0 group-[.active]:opacity-100 transition-all text-gray-300 translate-y-2 group-[.active]:translate-y-0">جستجو</span>
+            </button>
+
+            <button onclick="Router.navigate('library')" class="nav-item group relative w-12 h-12 flex flex-col items-center justify-center transition-all duration-300">
+                <div class="w-10 h-10 rounded-2xl bg-white/5 group-[.active]:bg-primary group-[.active]:text-white text-gray-400 flex items-center justify-center text-xl transition-all shadow-lg group-[.active]:shadow-primary/40 group-[.active]:-translate-y-3">
+                    <i class="fa-solid fa-bookmark"></i>
+                </div>
+                <span class="absolute -bottom-2 text-[9px] font-bold opacity-0 group-[.active]:opacity-100 transition-all text-gray-300 translate-y-2 group-[.active]:translate-y-0">کتابخانه</span>
+            </button>
+
+        </div>
+    </div>
+
+    <!-- Details Modal -->
+    <div id="modal-container" class="fixed inset-0 z-[100] translate-y-full transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)]">
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" onclick="UI.closeModal()"></div>
+        <div class="absolute inset-0 bg-[#08080a] md:rounded-t-[3rem] md:top-10 overflow-y-auto no-scrollbar shadow-2xl">
+            <button onclick="UI.closeModal()" class="fixed top-6 right-6 z-50 w-12 h-12 bg-black/30 backdrop-blur-md rounded-full flex items-center justify-center text-white border border-white/10 hover:bg-white/20 transition group">
+                <i class="fa-solid fa-xmark text-xl group-hover:rotate-90 transition-transform"></i>
+            </button>
+            <div id="modal-content" class="min-h-screen pb-32">
+                <!-- Content Injected -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Video Player Overlay -->
+    <div id="player-overlay" class="fixed inset-0 z-[150] bg-black hidden flex-col justify-center animate-fade-in opacity-0 transition-opacity duration-300">
+        <div class="w-full max-w-6xl mx-auto aspect-video bg-black relative shadow-2xl shadow-primary/20">
+            <div id="video-embed-container" class="w-full h-full flex items-center justify-center text-gray-500"></div>
+        </div>
+        <div class="p-8 text-center">
+            <h2 id="player-title" class="text-2xl font-bold mb-4 text-white"></h2>
+            <button onclick="UI.closePlayer()" class="px-8 py-3 bg-white/10 rounded-full hover:bg-white/20 transition text-white border border-white/10">بستن پخش کننده</button>
+        </div>
+    </div>
+
+    <!-- Settings / Profile Sheet -->
+    <div id="settings-sheet" class="fixed inset-0 z-[140] hidden pointer-events-none">
+        <div class="absolute inset-0 bg-black/50 backdrop-blur-sm opacity-0 transition-opacity duration-300 pointer-events-auto" onclick="UI.toggleSettings()"></div>
+        <div class="absolute bottom-0 left-0 right-0 bg-[#121215] rounded-t-[2.5rem] p-8 transform translate-y-full transition-transform duration-300 pointer-events-auto border-t border-white/10">
+            
+            <div class="w-12 h-1 bg-white/20 rounded-full mx-auto mb-8"></div>
+            
+            
+<div class="flex items-center gap-4 mb-8">
+    <img id="profile-avatar" src="https://api.dicebear.com/7.x/notionists/svg?seed=Felix" class="w-16 h-16 rounded-full border-2 border-primary/50" alt="Avatar">
+    <div>
+        <h3 id="profile-name" class="text-xl font-bold text-white">کاربر مهمان</h3>
+        <p id="profile-subtitle" class="text-sm text-gray-400">خوش آمدید به نسخه نهایی</p>
+    </div>
+</div>
+
+            <div class="grid grid-cols-2 gap-4 mb-8">
+                <div class="bg-white/5 p-4 rounded-2xl border border-white/5 text-center">
+                    <div class="text-2xl font-black text-primary mb-1" id="stat-favs">0</div>
+                    <div class="text-xs text-gray-400">علاقه‌مندی</div>
+                </div>
+                <div class="bg-white/5 p-4 rounded-2xl border border-white/5 text-center">
+                    <div class="text-2xl font-black text-accent mb-1" id="stat-history">0</div>
+                    <div class="text-xs text-gray-400">بازدید شده</div>
+                </div>
+            </div>
+
+            <h3 class="font-bold text-gray-400 text-xs tracking-widest uppercase mb-4">تنظیمات ظاهری</h3>
+            
+            <!-- Theme Colors -->
+            <div class="flex gap-4 mb-6">
+                <button onclick="UI.setTheme('indigo')" class="w-12 h-12 rounded-2xl bg-indigo-500 border-2 border-transparent focus:border-white focus:scale-110 transition shadow-lg shadow-indigo-500/30"></button>
+                <button onclick="UI.setTheme('emerald')" class="w-12 h-12 rounded-2xl bg-emerald-500 border-2 border-transparent focus:border-white focus:scale-110 transition shadow-lg shadow-emerald-500/30"></button>
+                <button onclick="UI.setTheme('rose')" class="w-12 h-12 rounded-2xl bg-rose-500 border-2 border-transparent focus:border-white focus:scale-110 transition shadow-lg shadow-rose-500/30"></button>
+                <button onclick="UI.setTheme('amber')" class="w-12 h-12 rounded-2xl bg-amber-500 border-2 border-transparent focus:border-white focus:scale-110 transition shadow-lg shadow-amber-500/30"></button>
+            </div>
+
+            <!-- Accessibility -->
+            <label class="flex items-center justify-between bg-white/5 p-4 rounded-2xl border border-white/5 cursor-pointer">
+                <div>
+                    <div class="font-bold text-sm">کاهش انیمیشن</div>
+                    <div class="text-[10px] text-gray-400">برای بهبود عملکرد در دستگاه‌های ضعیف</div>
+                </div>
+                <input type="checkbox" id="reduced-motion-toggle" onchange="UI.toggleReducedMotion(this)" class="w-5 h-5 accent-primary rounded bg-white/10 border-none">
+            </label>
+            
+            <div class="mt-8 text-center text-xs text-gray-600 font-mono">
+                AnimeCloud Ultimate v2.0
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed top-8 left-1/2 -translate-x-1/2 z-[200] flex items-center gap-3 px-6 py-3 rounded-full glass-heavy shadow-2xl shadow-primary/20 translate-y-[-200%] transition-transform duration-500 border border-primary/20">
+        <i id="toast-icon" class="fa-solid fa-check-circle text-primary text-lg"></i>
+        <div class="flex flex-col items-start">
+            <span id="toast-title" class="text-sm font-bold text-white">موفق</span>
+            <span id="toast-msg" class="text-[10px] text-gray-400">عملیات با موفقیت انجام شد</span>
+        </div>
+    </div>
+
+    <!-- JavaScript Application Logic -->
+    <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
+    <script>
+        /**
+         * AnimeCloud Ultimate - Core Logic
+         * Combines V1 features (Translation, Parallax) with V1.1 Architecture (Modules, Theming)
+         */
+
+        const CONFIG = {
+            tgApiBase: 'https://YOUR_SERVER_HOST/api', // آدرس API بک‌اند دینامیک
+            apiBase: 'https://api.jikan.moe/v4',
+            manualLinks: {
+                "52991": "https://www.w3schools.com/html/mov_bbb.mp4", // Frieren Example
+            },
+            dictionary: {
+                genres: { "Action": "اکشن", "Adventure": "ماجراجویی", "Comedy": "کمدی", "Drama": "درام", "Fantasy": "فانتزی", "Sci-Fi": "علمی تخیلی", "Romance": "عاشقانه", "Mystery": "رازآلود", "Supernatural": "ماورا طبیعی" },
+                status: { "Finished Airing": "پایان یافته", "Currently Airing": "در حال پخش", "Not yet aired": "بزودی" },
+                type: { "TV": "سریالی", "Movie": "سینمایی", "OVA": "OVA" }
+            }
+        };
+
+        
+// --- TELEGRAM MINI APP INTEGRATION ---
+class TelegramApp {
+    static webApp = null; static user = null;
+    static init(){
+        try{
+            if(window.Telegram && window.Telegram.WebApp){
+                const app = window.Telegram.WebApp;
+                this.webApp = app;
+                this.user = app.initDataUnsafe && app.initDataUnsafe.user ? app.initDataUnsafe.user : null;
+                if (app.ready) app.ready();
+                if (app.expand) app.expand();
+                this.applyUserProfile();
+                if (app.BackButton){ app.BackButton.hide(); app.BackButton.onClick(()=>{ if (UI.closeModal) UI.closeModal(); }); }
+            }
+        }catch(e){console.warn(e);}
+    }
+    static applyUserProfile(){
+        if(!this.user) return;
+        const nameEl=document.getElementById('profile-name');
+        const av=document.getElementById('profile-avatar');
+        const sub=document.getElementById('profile-subtitle');
+        if(nameEl) nameEl.textContent = (this.user.first_name||'') + (this.user.last_name?(' '+this.user.last_name):'');
+        if(av && this.user.photo_url) av.src=this.user.photo_url;
+        if(sub) sub.textContent = this.user.username ? '@'+this.user.username : 'کاربر تلگرام';
+    }
+    static showBackButton(){ try{ this.webApp?.BackButton?.show(); }catch{} }
+    static hideBackButton(){ try{ this.webApp?.BackButton?.hide(); }catch{} }
+    static openFileFromTelegram(url){
+        try{
+            if(this.webApp && typeof this.webApp.openTelegramLink==='function'){ this.webApp.openTelegramLink(url); }
+            else { window.open(url, '_blank'); }
+        }catch{ window.open(url, '_blank'); }
+    }
+}
+
+// --- STORAGE MODULE ---
+
+        class Storage {
+            static get(key, defaultVal = []) {
+                try {
+                    return JSON.parse(localStorage.getItem(`ac_ult_${key}`)) || defaultVal;
+                } catch { return defaultVal; }
+            }
+            static set(key, value) {
+                localStorage.setItem(`ac_ult_${key}`, JSON.stringify(value));
+            }
+            static toggleList(listName, item) {
+                let list = this.get(listName);
+                const index = list.findIndex(i => i.mal_id === item.mal_id);
+                if (index > -1) {
+                    list.splice(index, 1);
+                    this.set(listName, list);
+                    return false; // Removed
+                } else {
+                    list.push(item);
+                    this.set(listName, list);
+                    return true; // Added
+                }
+            }
+            static addToHistory(item) {
+                let history = this.get('history');
+                history = history.filter(i => i.mal_id !== item.mal_id);
+                history.unshift(item);
+                if (history.length > 30) history.pop();
+                this.set('history', history);
+            }
+            static check(listName, id) {
+                return this.get(listName).some(i => i.mal_id === id);
+            }
+        }
+
+        // --- API MODULE ---
+        // Dynamic TG episodes API
+        
+        class API {
+            static async getTgEpisodes(malId){
+                try{
+                    const base = CONFIG.tgApiBase.replace(/\/$/,'');
+                    const res = await fetch(`${base}/anime/${malId}/episodes`);
+                    if(!res.ok) return [];
+                    const json = await res.json();
+                    return Array.isArray(json) ? json : [];
+                }catch(e){
+                    console.warn('TG API error', e);
+                    return [];
+                }
+            }
+
+            static async get(endpoint, retries = 2) {
+                try {
+                    const res = await fetch(`${CONFIG.apiBase}${endpoint}`);
+                    if (!res.ok) {
+                        if (res.status === 429 && retries > 0) { // Rate limit
+                            await new Promise(r => setTimeout(r, 1200));
+                            return this.get(endpoint, retries - 1);
+                        }
+                        throw new Error(`API Error: ${res.status}`);
+                    }
+                    const json = await res.json();
+                    return json.data;
+                } catch (err) {
+                    console.error(err);
+                    return null;
+                }
+            }
+            static async getSeasonNow() { return this.get('/seasons/now?limit=6'); }
+            static async getTrending() { return this.get('/top/anime?filter=airing&limit=10'); }
+            static async getTop(page = 1, filter = 'bypopularity') { return this.get(`/top/anime?filter=${filter}&page=${page}&limit=20`); }
+            static async getDetails(id) { return this.get(`/anime/${id}/full`); }
+            static async getCharacters(id) { return this.get(`/anime/${id}/characters`); }
+            static async getRecommendations(id) { return this.get(`/anime/${id}/recommendations`); }
+            static async getRandom() { return this.get('/random/anime'); }
+            static async search(query, filters = {}) {
+                let url = `/anime?q=${encodeURIComponent(query)}&sfw`;
+                if(filters.status) url += `&status=${filters.status}`;
+                if(filters.type) url += `&type=${filters.type}`;
+                return this.get(url);
+            }
+        }
+
+        // --- UI MODULE ---
+        class UI {
+            static translate(cat, term) {
+                return (CONFIG.dictionary[cat] && CONFIG.dictionary[cat][term]) || term;
+            }
+
+            static showToast(title, msg, type = 'success') {
+                const toast = document.getElementById('toast');
+                const icon = document.getElementById('toast-icon');
+                
+                document.getElementById('toast-title').textContent = title;
+                document.getElementById('toast-msg').textContent = msg;
+                
+                icon.className = type === 'success' ? 'fa-solid fa-circle-check text-primary text-lg' : 'fa-solid fa-circle-info text-accent text-lg';
+                
+                toast.style.transform = 'translate(-50%, 0)';
+                setTimeout(() => { toast.style.transform = 'translate(-50%, -200%)'; }, 3000);
+            }
+
+            static updateAmbientBg(url) {
+                const bg = document.getElementById('ambient-bg');
+                bg.style.backgroundImage = `url('${url}')`;
+            }
+
+            static toggleSettings() {
+                const menu = document.getElementById('settings-sheet');
+                const backdrop = menu.querySelector('div:first-child');
+                const sheet = menu.querySelector('div:last-child');
+                
+                if (menu.classList.contains('hidden')) {
+                    menu.classList.remove('hidden');
+                    // Update stats
+                    document.getElementById('stat-favs').textContent = Storage.get('favs').length;
+                    document.getElementById('stat-history').textContent = Storage.get('history').length;
+                    
+                    requestAnimationFrame(() => {
+                        backdrop.classList.remove('opacity-0');
+                        sheet.classList.remove('translate-y-full');
+                    });
+                } else {
+                    backdrop.classList.add('opacity-0');
+                    sheet.classList.add('translate-y-full');
+                    setTimeout(() => menu.classList.add('hidden'), 300);
+                }
+            }
+
+            static setTheme(themeName) {
+                const body = document.body;
+                // Keep reduced-motion if exists
+                const isReduced = body.classList.contains('reduced-motion');
+                body.className = `antialiased pb-28 selection:bg-primary selection:text-white transition-colors duration-500 theme-${themeName}`;
+                if(isReduced) body.classList.add('reduced-motion');
+                
+                localStorage.setItem('ac_ult_theme', themeName);
+                this.showToast('تغییر تم', `تم ${themeName} فعال شد`);
+            }
+
+            static toggleReducedMotion(checkbox) {
+                if (checkbox.checked) {
+                    document.body.classList.add('reduced-motion');
+                    localStorage.setItem('ac_ult_reduced', '1');
+                } else {
+                    document.body.classList.remove('reduced-motion');
+                    localStorage.setItem('ac_ult_reduced', '0');
+                }
+            }
+
+            static renderCards(data, containerId, isRow = false) {
+                const container = document.getElementById(containerId);
+                if (!container.dataset.appending) container.innerHTML = ''; 
+
+                if (!data || !data.length) {
+                    if(!container.dataset.appending) container.innerHTML = '<div class="col-span-full text-center text-gray-500 py-10 opacity-50">موردی یافت نشد.</div>';
+                    return;
+                }
+
+                const html = data.map((anime, idx) => {
+                    const delay = (idx % 10) * 50;
+                    return `
+                    <div class="group relative cursor-pointer card-hover animate-slide-up ${isRow ? 'min-w-[150px] w-[150px]' : 'w-full'}" 
+                         style="animation-delay: ${delay}ms"
+                         onclick="App.openAnime(${anime.mal_id})">
+                        <div class="aspect-[2/3] rounded-2xl overflow-hidden relative mb-3 bg-surface shadow-lg border border-white/5">
+                            <img src="${anime.images.jpg.image_url}" class="w-full h-full object-cover transition-transform duration-700" loading="lazy" alt="${anime.title}">
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity"></div>
+                            
+                            <!-- Score Badge -->
+                            <div class="absolute top-2 left-2 bg-black/40 backdrop-blur-md px-2 py-1 rounded-lg text-[10px] font-bold text-white border border-white/10 flex items-center gap-1">
+                                <i class="fa-solid fa-star text-yellow-400 text-[8px]"></i> ${anime.score || 'N/A'}
+                            </div>
+
+                            <!-- Play Icon on Hover -->
+                            <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                <div class="w-10 h-10 bg-primary/90 rounded-full flex items-center justify-center text-white shadow-xl shadow-primary/40 transform scale-50 group-hover:scale-100 transition-transform">
+                                    <i class="fa-solid fa-play text-xs"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <h3 class="text-sm font-bold text-white leading-tight line-clamp-1 group-hover:text-primary transition-colors">${anime.title}</h3>
+                        <div class="flex items-center justify-between mt-1">
+                            <p class="text-[10px] text-gray-500">${this.translate('type', anime.type)} • ${anime.year || '?'}</p>
+                        </div>
+                    </div>
+                    `;
+                }).join('');
+                
+                if(container.dataset.appending) {
+                    container.insertAdjacentHTML('beforeend', html);
+                    delete container.dataset.appending;
+                } else {
+                    container.innerHTML = html;
+                }
+            }
+
+            static async openModal(anime) {
+
+// TG dynamic episodes
+const tgFiles = await API.getTgEpisodes(anime.mal_id);
+const hasTgFiles = tgFiles && tgFiles.length > 0;
+const safeTitle = (anime.title||'').replace(/'/g, "");
+
+let primaryAction = '';
+let primaryLabel = '';
+let primaryIcon = '';
+
+if (hasTgFiles) {
+    const firstUrl = (tgFiles[0].url || '').replace(/'/g, "\'");
+    primaryAction = `TelegramApp.openFileFromTelegram('${firstUrl}')`;
+    primaryLabel = 'دانلود / پخش قسمت ۱ از تلگرام';
+    primaryIcon = 'fa-telegram';
+} else if (CONFIG.manualLinks[anime.mal_id]) {
+    primaryAction = `App.playVideo('manual', '${anime.mal_id}', '${safeTitle}')`;
+    primaryLabel = 'پخش فیلم';
+    primaryIcon = 'fa-play';
+} else {
+    primaryAction = `UI.showToast('در حال آپلود', 'فایل‌های این انیمه هنوز روی تلگرام آپلود نشده‌اند', 'info')`;
+    primaryLabel = 'در حال آپلود';
+    primaryIcon = 'fa-lock';
+}
+
+                const container = document.getElementById('modal-container');
+                const content = document.getElementById('modal-content');
+                container.classList.remove('translate-y-full');
+
+                const isFav = Storage.check('favs', anime.mal_id);
+                const hasManualLink = CONFIG.manualLinks[anime.mal_id];
+                const trailerUrl = anime.trailer?.embed_url;
+
+                // Pre-fetch extra data
+                const [chars, recs] = await Promise.all([
+                    API.getCharacters(anime.mal_id),
+                    API.getRecommendations(anime.mal_id)
+                ]);
+
+                // Parallax Header & Content
+                content.innerHTML = `
+                    <div class="relative h-[60vh] w-full group">
+                        <img src="${anime.images.jpg.large_image_url}" class="w-full h-full object-cover mask-image-gradient" alt="Cover">
+                        <div class="absolute inset-0 bg-gradient-to-t from-[#08080a] via-[#08080a]/50 to-transparent"></div>
+                        
+                        <div class="absolute bottom-0 left-0 right-0 p-6 md:p-10 pb-12 z-10">
+                             <div class="flex flex-wrap gap-2 mb-4">
+                                ${anime.genres.slice(0,3).map(g => `<span class="px-3 py-1 bg-white/10 text-white border border-white/10 rounded-full text-xs backdrop-blur-md">${this.translate('genres', g.name)}</span>`).join('')}
+                            </div>
+                            <h1 class="text-3xl md:text-5xl font-black text-white leading-none mb-4 text-glow">${anime.title}</h1>
+                            <div class="flex items-center gap-6 text-sm text-gray-300 font-medium">
+                                <span class="flex items-center gap-1"><i class="fa-regular fa-clock"></i> ${anime.duration}</span>
+                                <span class="flex items-center gap-1 text-yellow-400"><i class="fa-solid fa-star"></i> ${anime.score || 'N/A'}</span>
+                                <span class="text-primary">${anime.rating || 'N/A'}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="px-6 md:px-10 -mt-6 relative z-20">
+                        <!-- Action Buttons -->
+                        <div class="flex flex-wrap gap-3 mb-8">
+                            <!-- Play Manual (if exists) -->
+                            <button onclick="${primaryAction}" class="flex-1 bg-white text-black py-3.5 rounded-xl font-black text-base hover:scale-[1.02] active:scale-95 transition-all shadow-lg shadow-white/10 flex items-center justify-center gap-2">
+                                <i class="fa-solid ${primaryIcon}"></i> ${primaryLabel}
+                            </button>
+                            
+                            <!-- Play Trailer (if exists) -->
+                            ${trailerUrl ? `
+                            <button onclick="App.playVideo('trailer', '${trailerUrl}', '${anime.title.replace(/'/g, "")}')" 
+                                    class="flex-1 bg-primary text-white py-3.5 rounded-xl font-bold text-base hover:bg-primary/90 transition-all shadow-lg shadow-primary/30 flex items-center justify-center gap-2">
+                                <i class="fa-brands fa-youtube"></i> تریلر
+                            </button>
+                            ` : ''}
+
+                            <button id="btn-fav-modal" onclick="App.toggleFavFromModal(${anime.mal_id}, '${anime.title.replace(/'/g, "")}', '${anime.images.jpg.image_url}', this)" 
+                                class="w-14 rounded-xl flex items-center justify-center border border-white/10 glass text-xl transition active:scale-90 ${isFav ? 'text-accent border-accent' : 'text-gray-300'}">
+                                <i class="fa-${isFav ? 'solid' : 'regular'} fa-heart"></i>
+                            </button>
+                        </div>
+
+                        
+${hasTgFiles ? `
+<div class="mb-8 p-5 bg-[#101012] rounded-2xl border border-primary/40">
+    <div class="flex items-center justify-between mb-3">
+        <h3 class="text-gray-400 text-xs font-bold tracking-widest uppercase">پخش و دانلود از تلگرام</h3>
+        <span class="text-[10px] px-3 py-1 rounded-full bg-primary/10 text-primary border border-primary/30">هاست تلگرام</span>
+    </div>
+    <p class="text-[11px] text-gray-400 mb-3">قسمت‌ها روی کانال یا ربات تلگرام شما آپلود شده‌اند. با لمس هر قسمت، پیام مربوطه در تلگرام باز می‌شود.</p>
+    <div class="space-y-2 max-h-64 overflow-y-auto no-scrollbar">
+        ${tgFiles.map((file, index) => {
+            const safeUrl = (file.url || '').replace(/'/g, "\'");
+            const label = file.label || `قسمت ${file.episode || index + 1}`;
+            const epnum = file.episode || (index + 1);
+            return `
+                <button type="button" onclick="TelegramApp.openFileFromTelegram('${safeUrl}')" class="w-full flex items-center justify-between bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl px-3 py-2 transition">
+                    <div class="flex items-center gap-3">
+                        <span class="w-7 h-7 rounded-full bg-primary/20 text-primary text-[11px] font-bold flex items-center justify-center">${epnum}</span>
+                        <span class="text-xs md:text-sm text-white text-right">${label}</span>
+                    </div>
+                    <i class="fa-brands fa-telegram text-lg"></i>
+                </button>
+            `;
+        }).join('')}
+    </div>
+</div>
+` : ''}
+
+<!-- Synopsis -->
+                        <div class="mb-8">
+                            <div class="flex justify-between items-center mb-3">
+                                <h3 class="text-gray-500 font-bold text-xs uppercase tracking-widest">داستان</h3>
+                                <button onclick="App.translateSynopsis(this)" data-text="${anime.synopsis ? anime.synopsis.replace(/"/g, '&quot;') : ''}" 
+                                        class="text-[10px] bg-primary/10 text-primary px-3 py-1 rounded-full hover:bg-primary hover:text-white transition border border-primary/20">
+                                    <i class="fa-solid fa-language"></i> ترجمه فارسی
+                                </button>
+                            </div>
+                            <p id="synopsis-text" class="text-gray-300 leading-relaxed font-light text-justify text-sm md:text-base opacity-90">${anime.synopsis || 'توضیحی موجود نیست.'}</p>
+                        </div>
+
+                        <!-- Info Grid -->
+                        <div class="grid grid-cols-2 gap-3 mb-8">
+                            <div class="bg-white/5 p-4 rounded-xl border border-white/5">
+                                <div class="text-gray-500 text-[10px] mb-1">استودیو</div>
+                                <div class="text-sm font-bold text-white truncate">${anime.studios[0]?.name || '-'}</div>
+                            </div>
+                            <div class="bg-white/5 p-4 rounded-xl border border-white/5">
+                                <div class="text-gray-500 text-[10px] mb-1">وضعیت</div>
+                                <div class="text-sm font-bold text-green-400 truncate">${this.translate('status', anime.status)}</div>
+                            </div>
+                            <div class="bg-white/5 p-4 rounded-xl border border-white/5">
+                                <div class="text-gray-500 text-[10px] mb-1">رتبه جهانی</div>
+                                <div class="text-sm font-bold text-white">#${anime.rank}</div>
+                            </div>
+                            <div class="bg-white/5 p-4 rounded-xl border border-white/5">
+                                <div class="text-gray-500 text-[10px] mb-1">فصل</div>
+                                <div class="text-sm font-bold text-white truncate">${anime.season || ''} ${anime.year || ''}</div>
+                            </div>
+                        </div>
+
+                        <!-- Characters (Horizontal Scroll) -->
+                        ${chars && chars.length ? `
+                        <div class="mb-8">
+                            <h3 class="text-gray-500 font-bold mb-4 text-xs uppercase tracking-widest">بازیگران</h3>
+                            <div class="flex gap-4 overflow-x-auto pb-4 no-scrollbar">
+                                ${chars.slice(0, 15).map(c => `
+                                    <div class="flex-shrink-0 w-20 text-center group cursor-pointer">
+                                        <div class="w-16 h-16 rounded-full overflow-hidden mx-auto mb-2 border-2 border-white/10 group-hover:border-primary transition">
+                                            <img src="${c.character.images.jpg.image_url}" class="w-full h-full object-cover">
+                                        </div>
+                                        <p class="text-[10px] text-gray-300 truncate group-hover:text-white">${c.character.name}</p>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                        ` : ''}
+
+                        <!-- Recommendations -->
+                        ${recs && recs.length ? `
+                        <div class="mb-8">
+                            <h3 class="text-gray-500 font-bold mb-4 text-xs uppercase tracking-widest">پیشنهادهای مشابه</h3>
+                            <div class="grid grid-cols-3 gap-3">
+                                ${recs.slice(0, 6).map(r => `
+                                    <div class="cursor-pointer group" onclick="App.openAnime(${r.entry.mal_id})">
+                                        <div class="aspect-[2/3] rounded-xl overflow-hidden bg-white/5 mb-1 relative">
+                                            <img src="${r.entry.images.jpg.image_url}" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-110 transition duration-500">
+                                            <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition"></div>
+                                        </div>
+                                        <p class="text-[10px] text-gray-400 truncate group-hover:text-primary transition">${r.entry.title}</p>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                        ` : ''}
+
+                        <!-- Comments -->
+                        <div class="mb-8 p-5 bg-[#101012] rounded-2xl border border-white/5">
+                            <h3 class="text-gray-400 text-xs font-bold mb-4">نظرات کاربران</h3>
+                            <div id="comments-container-${anime.mal_id}" class="space-y-4 mb-5"></div>
+                            <div class="flex gap-2">
+                                <input id="comment-input-${anime.mal_id}" type="text" placeholder="نظر خود را بنویسید..." class="w-full bg-[#1c1c20] border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:border-primary outline-none transition">
+                                <button onclick="App.postComment(${anime.mal_id})" class="bg-primary text-white p-3 rounded-xl hover:bg-primary/80 transition shadow-lg shadow-primary/20"><i class="fa-solid fa-paper-plane"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                App.renderComments(anime.mal_id);
+            }
+
+            static closeModal() {
+                document.getElementById('modal-container').classList.add('translate-y-full');
+                setTimeout(() => {
+                     document.getElementById('modal-content').innerHTML = '';
+                }, 500);
+            }
+
+            static closePlayer() {
+                const overlay = document.getElementById('player-overlay');
+                overlay.classList.add('opacity-0');
+                setTimeout(() => {
+                    overlay.classList.add('hidden');
+                    document.getElementById('video-embed-container').innerHTML = '';
+                }, 300);
+            }
+
+            static switchLibraryTab(tab) {
+                // UI Toggle
+                const favBtn = document.getElementById('lib-tab-favs');
+                const histBtn = document.getElementById('lib-tab-history');
+                const favContent = document.getElementById('lib-content-favs');
+                const histContent = document.getElementById('lib-content-history');
+
+                if (tab === 'favs') {
+                    favBtn.className = 'text-xl font-black text-white border-b-2 border-primary pb-3 px-2 transition-colors';
+                    histBtn.className = 'text-xl font-bold text-gray-500 hover:text-gray-300 pb-3 px-2 transition-colors';
+                    favContent.classList.remove('hidden');
+                    histContent.classList.add('hidden');
+                    App.loadFavorites();
+                } else {
+                    histBtn.className = 'text-xl font-black text-white border-b-2 border-primary pb-3 px-2 transition-colors';
+                    favBtn.className = 'text-xl font-bold text-gray-500 hover:text-gray-300 pb-3 px-2 transition-colors';
+                    histContent.classList.remove('hidden');
+                    favContent.classList.add('hidden');
+                    App.loadHistory();
+                }
+            }
+        }
+
+        // --- ROUTER ---
+        class Router {
+            static navigate(viewName) {
+                document.querySelectorAll('.page-view').forEach(el => el.classList.add('hidden'));
+                
+                const target = document.getElementById(`view-${viewName}`);
+                if (target) {
+                    target.classList.remove('hidden');
+                    window.scrollTo(0,0);
+                }
+
+                // Update Bottom Nav Active State
+                document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+                const navIndex = ['home', 'search', 'library'].indexOf(viewName);
+                if (navIndex > -1) {
+                    document.querySelectorAll('.nav-item')[navIndex].classList.add('active');
+                }
+
+                if (viewName === 'library') App.loadFavorites();
+            }
+        }
+
+        // --- APP CONTROLLER ---
+        class App {
+            static currentPage = 1;
+            
+            static async init() {
+                // Initialize Settings
+                const savedTheme = localStorage.getItem('ac_ult_theme') || 'indigo';
+                const reduced = localStorage.getItem('ac_ult_reduced') === '1';
+                
+                UI.setTheme(savedTheme);
+                if (reduced) {
+                    const toggle = document.getElementById('reduced-motion-toggle');
+                    if (toggle) toggle.checked = true;
+                    document.body.classList.add('reduced-motion');
+                }
+
+                // Splash Intro fade-out
+                const intro = document.getElementById('intro-overlay');
+                if (intro) {
+                    setTimeout(() => {
+                        intro.style.opacity = '0';
+                        intro.style.transform = 'scale(1.02)';
+                        intro.style.pointerEvents = 'none';
+                        setTimeout(() => intro.remove(), 800);
+                    }, 1400);
+                }
+
+                this.loadHome();
+                this.initSearchListener();
+                this.initKeyboardShortcuts();
+                this.renderContinueSection();
+            }
+
+            static async loadHome() {
+                const [season, trending, top] = await Promise.all([
+                    API.getSeasonNow(),
+                    API.getTrending(),
+                    API.getTop(1)
+                ]);
+
+                // Hero Slider with Ambient Background Logic
+                if (season) {
+                    document.getElementById('hero-wrapper').innerHTML = season.map(anime => `
+                        <div class="swiper-slide relative w-full h-full bg-cover bg-center cursor-pointer group" 
+                             style="background-image: url('${anime.images.jpg.large_image_url}')"
+                             onclick="App.openAnime(${anime.mal_id})">
+                             <div class="absolute inset-0 bg-black/40 group-hover:bg-transparent transition duration-500"></div>
+                             <div class="absolute bottom-12 left-6 right-6 md:left-12 md:right-12 z-20 transform transition-transform duration-700 group-hover:-translate-y-2">
+                                <div class="bg-primary/90 backdrop-blur-md px-3 py-1 rounded-lg text-xs font-bold inline-block mb-3 text-white shadow-lg shadow-primary/40 border border-white/10">پیشنهاد فصل</div>
+                                <h2 class="text-3xl md:text-5xl font-black text-white line-clamp-2 drop-shadow-2xl mb-2">${anime.title}</h2>
+                                <div class="flex items-center gap-3 text-sm text-gray-200">
+                                    <span class="bg-black/30 px-2 py-0.5 rounded border border-white/10">${anime.type}</span>
+                                    <span>${anime.score || '?'} <i class="fa-solid fa-star text-yellow-400 text-xs"></i></span>
+                                </div>
+                             </div>
+                        </div>
+                    `).join('');
+                    
+                    // Init Swiper
+                    new Swiper('.mainSwiper', {
+                        effect: 'fade',
+                        speed: 1000,
+                        autoplay: { delay: 5000, disableOnInteraction: false },
+                        pagination: { el: '.swiper-pagination', clickable: true },
+                        on: {
+                            slideChange: function () {
+                                if (season[this.realIndex]) {
+                                    UI.updateAmbientBg(season[this.realIndex].images.jpg.large_image_url);
+                                }
+                            },
+                            init: function() {
+                                if (season[0]) UI.updateAmbientBg(season[0].images.jpg.large_image_url);
+                            }
+                        }
+                    });
+                }
+
+                // Initial Content Render
+                if (trending) UI.renderCards(trending, 'trending-row', true);
+                if (top) UI.renderCards(top, 'top-grid');
+
+                // Filter Logic for Trending
+                document.querySelectorAll('.filter-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        // UI Update
+                        document.querySelectorAll('.filter-btn').forEach(b => {
+                            b.className = 'filter-btn whitespace-nowrap px-6 py-2.5 rounded-xl text-sm font-medium bg-surface border border-white/10 text-gray-400 hover:text-white transition-all';
+                        });
+                        e.target.className = 'filter-btn active whitespace-nowrap px-6 py-2.5 rounded-xl text-sm font-bold border border-transparent transition-all shadow-lg bg-primary text-white';
+                        
+                        // Filter Logic
+                        const genre = e.target.dataset.genre;
+                        if (genre === 'all') {
+                            UI.renderCards(trending, 'trending-row', true);
+                        } else {
+                            const filtered = trending.filter(a => a.genres.some(g => g.name.includes(genre)));
+                            UI.renderCards(filtered, 'trending-row', true);
+                        }
+                    });
+                });
+            }
+
+            static async loadMoreTopAnime() {
+                const btn = document.querySelector('#load-more-text');
+                const parentBtn = btn.parentElement;
+                btn.textContent = 'در حال دریافت...';
+                parentBtn.classList.add('opacity-70', 'cursor-not-allowed');
+                
+                this.currentPage++;
+                const newData = await API.getTop(this.currentPage);
+                if (newData) {
+                    const container = document.getElementById('top-grid');
+                    container.dataset.appending = 'true';
+                    UI.renderCards(newData, 'top-grid');
+                }
+                
+                btn.textContent = 'بارگذاری بیشتر';
+                parentBtn.classList.remove('opacity-70', 'cursor-not-allowed');
+            }
+
+            static initSearchListener() {
+                let timeout;
+                document.getElementById('search-input').addEventListener('input', (e) => {
+                    clearTimeout(timeout);
+                    if (e.target.value.length < 3) return;
+                    
+                    document.getElementById('search-results').innerHTML = '<div class="col-span-full flex justify-center py-20"><div class="spinner"></div></div>';
+                    
+                    timeout = setTimeout(async () => {
+                        const filters = {
+                            status: document.getElementById('filter-status').value,
+                            type: document.getElementById('filter-type').value
+                        };
+                        const results = await API.search(e.target.value, filters);
+                        UI.renderCards(results, 'search-results');
+                    }, 800);
+                });
+            }
+
+            static async openAnime(id) {
+                // Show loader modal
+                const container = document.getElementById('modal-container');
+                container.classList.remove('translate-y-full');
+                document.getElementById('modal-content').innerHTML = '<div class="h-screen flex items-center justify-center"><div class="spinner"></div></div>';
+
+                const fullData = await API.getDetails(id);
+                if(fullData) {
+                    await UI.openModal(fullData);
+                    Storage.addToHistory({
+                        mal_id: fullData.mal_id,
+                        title: fullData.title,
+                        images: fullData.images,
+                        type: fullData.type,
+                        year: fullData.year,
+                        score: fullData.score
+                    });
+                    this.renderContinueSection();
+                }
+            }
+
+            static playVideo(type, source, title) {
+                const overlay = document.getElementById('player-overlay');
+                const container = document.getElementById('video-embed-container');
+                const titleEl = document.getElementById('player-title');
+                
+                overlay.classList.remove('hidden');
+                setTimeout(() => overlay.classList.remove('opacity-0'), 10);
+                titleEl.textContent = title;
+
+                if (type === 'manual') {
+                    // Check manual links
+                    const url = CONFIG.manualLinks[source];
+                    if(!url) {
+                         UI.showToast('خطا', 'لینک پخش هنوز آپلود نشده است', 'error');
+                         UI.closePlayer();
+                         return;
+                    }
+                    container.innerHTML = `<video controls autoplay class="w-full h-full rounded-xl outline-none shadow-2xl"><source src="${url}" type="video/mp4"></video>`;
+                } else if (type === 'trailer') {
+                     container.innerHTML = `<iframe src="${source}?autoplay=1" allow="autoplay; encrypted-media" class="w-full h-full rounded-xl border-none shadow-2xl"></iframe>`;
+                }
+            }
+
+            static toggleFavFromModal(id, title, img, btn) {
+                const added = Storage.toggleList('favs', { mal_id: id, title: title, images: { jpg: { image_url: img } }, score: '?' });
+                const icon = btn.querySelector('i');
+                if (added) {
+                    icon.className = 'fa-solid fa-heart';
+                    btn.classList.add('text-accent', 'border-accent');
+                    btn.classList.remove('text-gray-300');
+                    UI.showToast('علاقه‌مندی', 'به لیست اضافه شد');
+                } else {
+                    icon.className = 'fa-regular fa-heart';
+                    btn.classList.remove('text-accent', 'border-accent');
+                    btn.classList.add('text-gray-300');
+                    UI.showToast('حذف', 'از لیست حذف شد', 'info');
+                }
+            }
+
+            static loadFavorites() {
+                const favs = Storage.get('favs');
+                UI.renderCards(favs, 'lib-content-favs');
+            }
+
+            static loadHistory() {
+                const hist = Storage.get('history');
+                UI.renderCards(hist, 'lib-content-history');
+            }
+
+            static postComment(id) {
+                const input = document.getElementById(`comment-input-${id}`);
+                const text = input.value.trim();
+                if(!text) {
+                    UI.showToast('خطا', 'لطفا متن نظر را بنویسید', 'error');
+                    return;
+                }
+
+                const comments = Storage.get(`comments_${id}`);
+                comments.push({ text: text, date: new Date().toLocaleDateString('fa-IR'), user: 'کاربر مهمان' });
+                Storage.set(`comments_${id}`, comments);
+                
+                input.value = '';
+                this.renderComments(id);
+                UI.showToast('ثبت شد', 'نظر شما با موفقیت ثبت شد');
+            }
+
+            static renderComments(id) {
+                const comments = Storage.get(`comments_${id}`);
+                const container = document.getElementById(`comments-container-${id}`);
+                if (!comments.length) {
+                    container.innerHTML = '<p class="text-xs text-gray-500 text-center py-4 border border-dashed border-white/10 rounded-xl">اولین نظر را شما بنویسید.</p>';
+                    return;
+                }
+                container.innerHTML = comments.map(c => `
+                    <div class="bg-[#18181b] p-3 rounded-xl border border-white/5 shadow-sm">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-primary text-xs font-bold bg-primary/10 px-2 py-0.5 rounded-md">${c.user}</span>
+                            <span class="text-[10px] text-gray-500">${c.date}</span>
+                        </div>
+                        <p class="text-xs text-gray-300 leading-relaxed">${c.text}</p>
+                    </div>
+                `).join('');
+            }
+
+
+            static initKeyboardShortcuts() {
+                window.addEventListener('keydown', (e) => {
+                    const tag = (e.target && e.target.tagName || '').toLowerCase();
+                    if (tag === 'input' || tag === 'textarea' || e.metaKey || e.ctrlKey || e.altKey) return;
+
+                    if (e.key === '/') {
+                        e.preventDefault();
+                        Router.navigate('search');
+                        const input = document.getElementById('search-input');
+                        if (input) input.focus();
+                    } else if (e.key.toLowerCase() === 'f') {
+                        Router.navigate('library');
+                        UI.switchLibraryTab('favs');
+                    } else if (e.key.toLowerCase() === 'r') {
+                        this.openRandomAnime();
+                    }
+                });
+            }
+
+            static renderContinueSection() {
+                const section = document.getElementById('continue-section');
+                const row = document.getElementById('continue-row');
+                if (!section || !row) return;
+
+                const hist = Storage.get('history');
+                if (!hist.length) {
+                    section.classList.add('hidden');
+                    row.innerHTML = '';
+                    return;
+                }
+
+                section.classList.remove('hidden');
+                UI.renderCards(hist.slice(0, 15), 'continue-row', true);
+            }
+
+            static async openRandomAnime() {
+                UI.showToast('انیمه رندوم', 'در حال انتخاب یک انیمه برایت...', 'info');
+                const random = await API.getRandom();
+                if (random && random.mal_id) {
+                    this.openAnime(random.mal_id);
+                } else {
+                    UI.showToast('خطا', 'نتوانستم انیمه تصادفی پیدا کنم', 'error');
+                }
+            }
+
+            static async translateSynopsis(btn) {
+                const originalText = btn.getAttribute('data-text');
+                const target = document.getElementById('synopsis-text');
+                if (!originalText || !target) return;
+
+                const originalHTML = btn.innerHTML;
+                btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+                btn.disabled = true;
+
+                try {
+                    const encodedText = encodeURIComponent(originalText.substring(0, 499));
+                    const url = `https://api.mymemory.translated.net/get?q=${encodedText}&langpair=en|fa`;
+                    const res = await fetch(url);
+                    const data = await res.json();
+                    if (data && data.responseData) {
+                        target.textContent = data.responseData.translatedText + '...';
+                        target.classList.remove('text-justify');
+                        target.classList.add('text-right');
+                        btn.innerHTML = '<i class="fa-solid fa-check"></i>';
+                        btn.className = "text-[10px] bg-green-500/10 text-green-500 px-3 py-1 rounded-full border border-green-500/20";
+                    } else { throw new Error(); }
+                } catch (e) {
+                    UI.showToast('خطا', 'سرویس ترجمه در دسترس نیست', 'error');
+                    btn.innerHTML = originalHTML;
+                    btn.disabled = false;
+                }
+            }
+        }
+
+        // --- INIT ---
+        document.addEventListener('DOMContentLoaded', () => { TelegramApp.init(); App.init(); });
+
+    </script>
+</body>
+</html>
