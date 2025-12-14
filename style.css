@@ -1,0 +1,158 @@
+        /* --- Core Variables & Theming --- */
+        :root {
+            --color-primary: #6366f1; /* Indigo Default */
+            --color-primary-glow: rgba(99, 102, 241, 0.4);
+            --color-accent: #ec4899;
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --glass-bg: rgba(18, 18, 21, 0.7);
+            --plyr-color-main: var(--color-primary);
+        }
+
+        /* Theme Variants */
+        body.theme-emerald { --color-primary: #10b981; --color-primary-glow: rgba(16, 185, 129, 0.4); --color-accent: #3b82f6; --plyr-color-main: #10b981; }
+        body.theme-rose { --color-primary: #f43f5e; --color-primary-glow: rgba(244, 63, 94, 0.4); --color-accent: #f59e0b; --plyr-color-main: #f43f5e; }
+        body.theme-amber { --color-primary: #f59e0b; --color-primary-glow: rgba(245, 158, 11, 0.4); --color-accent: #8b5cf6; --plyr-color-main: #f59e0b; }
+        body.theme-cyan { --color-primary: #06b6d4; --color-primary-glow: rgba(6, 182, 212, 0.4); --color-accent: #ec4899; --plyr-color-main: #06b6d4; }
+
+        body {
+            font-family: 'Vazirmatn', sans-serif;
+            background-color: var(--tg-theme-bg-color, #050505);
+            color: var(--tg-theme-text-color, #fafafa);
+            overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Reduced Motion Accessibility */
+        body.reduced-motion * {
+            animation-duration: 0.001ms !important;
+            transition-duration: 0.001ms !important;
+            scroll-behavior: auto !important;
+        }
+
+        /* --- Ambient Background System --- */
+        #ambient-bg {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100vh;
+            z-index: -2;
+            background-size: cover; background-position: center;
+            filter: blur(60px) brightness(0.3) saturate(1.4);
+            opacity: 0.8;
+            transition: background-image 1.2s ease-in-out;
+            mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 90%);
+            -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 90%);
+        }
+        
+        /* --- Glassmorphism --- */
+        .glass {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px) saturate(180%);
+            -webkit-backdrop-filter: blur(16px) saturate(180%);
+            border: 1px solid var(--glass-border);
+        }
+        
+        .glass-heavy {
+            background: rgba(10, 10, 12, 0.85);
+            backdrop-filter: blur(24px) saturate(180%);
+            -webkit-backdrop-filter: blur(24px) saturate(180%);
+            border-top: 1px solid rgba(255,255,255,0.08);
+            box-shadow: 0 -10px 40px rgba(0,0,0,0.5);
+        }
+
+        /* --- Utilities --- */
+        .text-glow { text-shadow: 0 0 25px var(--color-primary-glow); }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        /* Custom Scrollbar for desktop */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.15); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.3); }
+
+        /* Card Effects */
+        .card-hover { transition: transform 0.1s ease-out; perspective: 1000px; transform-style: preserve-3d; }
+        .card-hover .card-inner { transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); transform: translateZ(0); }
+        .card-hover:hover .card-inner { transform: translateY(-8px) scale(1.02); box-shadow: 0 15px 30px rgba(0,0,0,0.5); }
+        .card-hover:hover img { transform: scale(1.1); }
+        .card-hover img { transition: transform 0.6s ease; }
+
+        /* Swiper Pagination */
+        .swiper-pagination-bullet { background: white; opacity: 0.3; transition: 0.3s; width: 6px; height: 6px; }
+        .swiper-pagination-bullet-active { background: var(--color-primary); width: 20px; border-radius: 10px; opacity: 1; }
+
+        /* Loader */
+        .spinner {
+            width: 40px; height: 40px;
+            border: 3px solid rgba(255,255,255,0.1);
+            border-left-color: var(--color-primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+    
+        /* --- AnimeCloud Logo Animation --- */
+        .logo-animated {
+            position: relative;
+            display: inline-block;
+            background-image: linear-gradient(120deg, var(--color-primary), var(--color-accent), #ffffff, var(--color-primary));
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            color: transparent;
+            animation: logoGradient 8s ease-in-out infinite;
+            letter-spacing: .03em;
+            text-shadow: 0 0 18px var(--color-primary-glow);
+        }
+
+        .logo-animated::after {
+            content: '';
+            position: absolute;
+            inset: -6px;
+            border-radius: 999px;
+            border: 1px solid rgba(255,255,255,0.08);
+            box-shadow: 0 0 24px rgba(0,0,0,0.7);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity .4s ease, transform .4s ease;
+        }
+
+        .nav-logo:hover .logo-animated::after {
+            opacity: 1;
+            transform: scale(1.04);
+        }
+
+        @keyframes logoGradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Mask for modal header image */
+        .mask-image-gradient {
+            mask-image: linear-gradient(to top,
+                rgba(0,0,0,0.25) 0%,
+                rgba(0,0,0,0.85) 40%,
+                #000 100%);
+            -webkit-mask-image: linear-gradient(to top,
+                rgba(0,0,0,0.25) 0%,
+                rgba(0,0,0,0.85) 40%,
+                #000 100%);
+        }
+
+        /* Plyr Customization */
+        .plyr {
+            border-radius: 1rem;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            font-family: 'Vazirmatn', sans-serif;
+        }
+        .plyr--full-ui input[type=range] {
+            color: var(--color-primary) !important;
+        }
+        .plyr__control--overlaid {
+            background: var(--color-primary) !important;
+            box-shadow: 0 0 30px var(--color-primary-glow);
+        }
+        .plyr__control.plyr__tab-focus {
+            box-shadow: 0 0 0 5px var(--color-primary-glow);
+        }
+        .plyr__menu__container .plyr__control--role-menuitem[aria-checked=true]::before {
+            background: var(--color-primary) !important;
+        }

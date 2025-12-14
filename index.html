@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#09090b">
+    <meta name="description" content="AnimeCloud Ultimate - مرجع انیمه با طراحی مدرن">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>AnimeCloud Ultimate | دنیای انیمه</title>
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json">
+
+    <!-- Telegram Mini App JS -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+    <!-- Tailwind CSS (via CDN) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        dark: '#050505',
+                        darker: '#020202',
+                        surface: '#121215',
+                        primary: 'var(--color-primary)',
+                        primaryGlow: 'var(--color-primary-glow)',
+                        accent: 'var(--color-accent)',
+                    },
+                    fontFamily: {
+                        vazir: ['Vazirmatn', 'sans-serif'],
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-glow': 'pulseGlow 4s ease-in-out infinite',
+                        'slide-up': 'slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                        'fade-in': 'fadeIn 0.4s ease-out forwards',
+                        'scale-in': 'scaleIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        },
+                        pulseGlow: {
+                            '0%, 100%': { opacity: 0.6, boxShadow: '0 0 20px var(--color-primary-glow)' },
+                            '50%': { opacity: 0.3, boxShadow: '0 0 10px var(--color-primary-glow)' },
+                        },
+                        slideUp: {
+                            '0%': { transform: 'translateY(20px)', opacity: 0 },
+                            '100%': { transform: 'translateY(0)', opacity: 1 },
+                        },
+                        fadeIn: {
+                            '0%': { opacity: 0 },
+                            '100%': { opacity: 1 },
+                        },
+                        scaleIn: {
+                            '0%': { transform: 'scale(0.9)', opacity: 0 },
+                            '100%': { transform: 'scale(1)', opacity: 1 },
+                        }
+                    }
+                }
+            }
+        };
+    </script>
+
+    <!-- Assets -->
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
+    
+    <!-- Plyr Player -->
+    <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
+    <script src="https://cdn.plyr.io/3.7.8/plyr.polyfilled.js"></script>
+
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="antialiased pb-28 selection:bg-primary selection:text-white transition-colors duration-500">
+
+    <!-- Intro / Splash Screen -->
+    <div id="intro-overlay" class="fixed inset-0 z-[999] flex items-center justify-center bg-gradient-to-br from-black via-dark to-surface">
+        <div class="text-center space-y-5">
+            <div class="relative inline-flex items-center justify-center mb-2">
+                <div class="w-24 h-24 rounded-3xl bg-gradient-to-tr from-primary to-accent flex items-center justify-center shadow-2xl shadow-primary/40 overflow-hidden animate-float">
+                    <i class="fa-solid fa-cloud-moon text-3xl text-white drop-shadow-xl"></i>
+                    <div class="absolute inset-0 bg-white/10 mix-blend-screen animate-pulse-glow pointer-events-none"></div>
+                </div>
+            </div>
+            <h1 class="text-3xl md:text-5xl font-black tracking-tight">
+                <span class="logo-animated">AnimeCloud</span>
+            </h1>
+            <p class="text-sm md:text-base text-gray-400">خوش آمدی به دنیای ابری انیمه‌ها ☁️</p>
+            <p class="text-[11px] text-gray-500">در حال آماده‌سازی پیشنهادهای شخصی‌سازی شده...</p>
+        </div>
+    </div>
+
+    <!-- Ambient Dynamic Background -->
+    <div id="ambient-bg"></div>
+    <div class="fixed inset-0 z-[-1] bg-gradient-to-t from-darker via-dark/80 to-transparent pointer-events-none"></div>
+
+    <!-- Header / Navbar -->
+    <nav class="fixed top-0 inset-x-0 z-50 glass border-b-0 px-6 py-4 flex justify-between items-center transition-all duration-300 rounded-b-3xl mx-2 mt-2 shadow-2xl" id="navbar">
+        <div class="flex items-center gap-3 cursor-pointer nav-logo" onclick="Router.navigate('home')">
+            <div class="relative w-10 h-10 flex items-center justify-center bg-gradient-to-tr from-primary to-accent rounded-xl shadow-lg overflow-hidden animate-float">
+                <i class="fa-solid fa-cloud-moon text-white text-base drop-shadow"></i>
+                <div class="absolute inset-0 bg-white/10 rounded-xl animate-pulse-glow pointer-events-none"></div>
+            </div>
+            <div class="flex flex-col">
+                <h1 class="font-black text-xl tracking-tighter leading-none">
+                    <span class="logo-animated">AnimeCloud</span>
+                </h1>
+                <span class="text-[10px] text-gray-400 font-bold tracking-[0.2em] uppercase">Ultimate</span>
+            </div>
+        </div>
+        <div class="flex items-center gap-3">
+            <div id="live-user-count" class="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/5 text-[10px] text-green-400">
+                <span class="relative flex h-2 w-2">
+                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                  <span class="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                </span>
+                <span id="user-count-num">0</span> آنلاین
+            </div>
+            <button onclick="UI.toggleSettings()" class="w-10 h-10 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center border border-white/5 transition relative overflow-hidden group">
+                <img src="https://api.dicebear.com/7.x/notionists/svg?seed=Felix" alt="Profile" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition">
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main id="app-container" class="container mx-auto px-4 pt-28 max-w-7xl min-h-screen">
+        
+        <!-- VIEW: HOME -->
+        <section id="view-home" class="page-view animate-slide-up">
+            
+            <!-- Hero Slider -->
+            <div class="relative mb-12 group rounded-[32px] overflow-hidden shadow-2xl shadow-black/50 border border-white/10">
+                <div class="swiper mainSwiper w-full h-[50vh] md:h-[65vh]">
+                    <div class="swiper-wrapper" id="hero-wrapper">
+                        <div class="swiper-slide flex items-center justify-center bg-surface">
+                            <div class="spinner"></div>
+                        </div>
+                    </div>
+                    <!-- Gradient Overlay -->
+                    <div class="absolute bottom-0 left-0 right-0 h-48 bg-gradient-to-t from-darker via-dark/80 to-transparent z-10"></div>
+                    <div class="swiper-pagination !bottom-8 !left-8 !w-auto z-20"></div>
+                </div>
+            </div>
+
+            <!-- Categories / Filter -->
+            <div class="sticky top-24 z-40 py-2 -mx-4 px-4 bg-dark/80 backdrop-blur-xl mb-8 border-b border-white/5 transition-all" id="filter-bar">
+                <div class="flex gap-3 overflow-x-auto no-scrollbar" id="genre-filters">
+                    <button data-genre="all" class="filter-btn active whitespace-nowrap px-6 py-2.5 rounded-xl text-sm font-bold border border-transparent transition-all shadow-lg bg-primary text-white">
+                        <i class="fa-solid fa-border-all mr-2"></i>همه
+                    </button>
+                    <button data-genre="Action" class="filter-btn whitespace-nowrap px-6 py-2.5 rounded-xl text-sm font-medium bg-surface border border-white/10 text-gray-400 hover:text-white transition-all">اکشن</button>
+                    <button data-genre="Romance" class="filter-btn whitespace-nowrap px-6 py-2.5 rounded-xl text-sm font-medium bg-surface border border-white/10 text-gray-400 hover:text-white transition-all">عاشقانه</button>
+                    <button data-genre="Fantasy" class="filter-btn whitespace-nowrap px-6 py-2.5 rounded-xl text-sm font-medium bg-surface border border-white/10 text-gray-400 hover:text-white transition-all">فانتزی</button>
+                    <button data-genre="Comedy" class="filter-btn whitespace-nowrap px-6 py-2.5 rounded-xl text-sm font-medium bg-surface border border-white/10 text-gray-400 hover:text-white transition-all">کمدی</button>
+                    <button data-genre="Drama" class="filter-btn whitespace-nowrap px-6 py-2.5 rounded-xl text-sm font-medium bg-surface border border-white/10 text-gray-400 hover:text-white transition-all">درام</button>
+                </div>
+            </div>
+
+            <!-- Section: Trending -->
+            <div class="mb-12">
+                <div class="flex items-end justify-between mb-6 px-1 border-r-4 border-primary pr-3">
+                    <div>
+                        <h2 class="text-2xl font-black text-white">برترین‌های فصل</h2>
+                        <p class="text-xs text-gray-400 mt-1">پرطرفدارترین انیمه‌های در حال پخش</p>
+                    </div>
+                    <button onclick="Router.navigate('search')" class="text-primary text-sm font-bold hover:brightness-125 transition flex items-center gap-1 group">
+                        بیشتر <i class="fa-solid fa-chevron-left text-xs group-hover:-translate-x-1 transition-transform"></i>
+                    </button>
+                </div>
+                <div class="relative group">
+                    <div class="flex gap-5 overflow-x-auto pb-8 px-2 no-scrollbar scroll-smooth" id="trending-row">
+                        <!-- Skeletons -->
+                        <div class="min-w-[160px] h-[240px] bg-white/5 rounded-2xl animate-pulse"></div>
+                        <div class="min-w-[160px] h-[240px] bg-white/5 rounded-2xl animate-pulse"></div>
+                        <div class="min-w-[160px] h-[240px] bg-white/5 rounded-2xl animate-pulse"></div>
+                    </div>
+                    <!-- Fade edges -->
+                    <div class="absolute top-0 right-0 bottom-8 w-16 bg-gradient-to-l from-dark to-transparent pointer-events-none"></div>
+                    <div class="absolute top-0 left-0 bottom-8 w-16 bg-gradient-to-r from-dark to-transparent pointer-events-none"></div>
+                </div>
+            </div>
+
+
+            <!-- Section: Continue Watching (History) -->
+            <div id="continue-section" class="mb-12 hidden">
+                <div class="flex items-center justify-between mb-6 px-1 border-r-4 border-emerald-400 pr-3">
+                    <div>
+                        <h2 class="text-2xl font-black text-white">ادامه تماشا</h2>
+                        <p class="text-xs text-gray-400 mt-1">براساس آخرین انیمه‌هایی که دیدی</p>
+                    </div>
+                    <button onclick="Router.navigate('library')" class="text-emerald-400 text-sm font-bold hover:brightness-125 transition flex items-center gap-1 group">
+                        کتابخانه <i class="fa-solid fa-chevron-left text-xs group-hover:-translate-x-1 transition-transform"></i>
+                    </button>
+                </div>
+                <div class="relative group">
+                    <div class="flex gap-5 overflow-x-auto pb-8 px-2 no-scrollbar scroll-smooth" id="continue-row">
+                        <!-- Filled dynamically from history -->
+                    </div>
+                    <div class="absolute top-0 right-0 bottom-8 w-16 bg-gradient-to-l from-dark to-transparent pointer-events-none"></div>
+                    <div class="absolute top-0 left-0 bottom-8 w-16 bg-gradient-to-r from-dark to-transparent pointer-events-none"></div>
+                </div>
+            </div>
+
+            <!-- Section: Top All Time -->
+            <div>
+                <div class="flex items-center justify-between mb-6 px-1 border-r-4 border-accent pr-3">
+                    <h2 class="text-2xl font-black text-white">شاهکارها</h2>
+                    <select id="sort-select" class="bg-surface border border-white/10 text-xs rounded-lg px-3 py-2 outline-none focus:border-primary text-gray-300">
+                        <option value="score">امتیاز بالا</option>
+                        <option value="popularity">محبوب‌ترین</option>
+                        <option value="favorites">علاقه‌مندی‌ها</option>
+                    </select>
+                </div>
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5 md:gap-6" id="top-grid">
+                    <!-- Cards injected here -->
+                </div>
+                <div class="mt-10 flex justify-center">
+                    <button onclick="App.loadMoreTopAnime()" class="px-8 py-3 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 hover:border-primary/50 hover:text-primary transition-all text-sm font-bold flex items-center gap-2 group">
+                        <span id="load-more-text">بارگذاری بیشتر</span>
+                        <i class="fa-solid fa-arrow-down group-hover:translate-y-1 transition-transform"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- VIEW: SCHEDULE -->
+        <section id="view-schedule" class="page-view hidden animate-slide-up">
+            <div class="flex items-center justify-between mb-8">
+                <h2 class="text-3xl font-black text-white">جدول پخش هفتگی</h2>
+                <div class="text-xs text-gray-500 bg-white/5 px-3 py-1 rounded-lg border border-white/5">بروزرسانی زنده</div>
+            </div>
+
+            <div class="flex gap-2 overflow-x-auto no-scrollbar mb-8 pb-2" id="schedule-days-nav">
+                <!-- Days injected via JS -->
+            </div>
+
+            <div id="schedule-content" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div class="col-span-full py-20 flex justify-center"><div class="spinner"></div></div>
+            </div>
+        </section>
+
+        <!-- VIEW: SEARCH -->
+        <section id="view-search" class="page-view hidden pt-2 animate-slide-up">
+            <div class="glass p-2 rounded-2xl mb-8 flex items-center relative z-20 shadow-xl">
+                <div class="pl-4 pr-3 text-gray-400"><i class="fa-solid fa-magnifying-glass text-xl"></i></div>
+                <input type="text" id="search-input" class="w-full bg-transparent border-none text-white py-3 px-2 focus:ring-0 placeholder-gray-500 text-lg font-medium" placeholder="جستجوی انیمه...">
+                <button onclick="document.getElementById('search-filter-panel').classList.toggle('hidden')" class="p-3 bg-white/5 rounded-xl text-gray-400 hover:text-white hover:bg-white/10 transition">
+                    <i class="fa-solid fa-sliders"></i>
+                </button>
+            </div>
+
+            <!-- Advanced Filters -->
+            <div id="search-filter-panel" class="hidden mb-8 bg-surface p-5 rounded-2xl border border-white/5 grid grid-cols-2 gap-4 text-sm animate-fade-in">
+                <div>
+                    <label class="block text-gray-500 mb-2 text-xs font-bold">وضعیت پخش</label>
+                    <select id="filter-status" class="w-full bg-dark border border-white/10 rounded-xl p-3 text-gray-300 outline-none focus:border-primary">
+                        <option value="">همه</option>
+                        <option value="airing">در حال پخش</option>
+                        <option value="complete">پایان یافته</option>
+                        <option value="upcoming">به زودی</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-gray-500 mb-2 text-xs font-bold">فرمت</label>
+                    <select id="filter-type" class="w-full bg-dark border border-white/10 rounded-xl p-3 text-gray-300 outline-none focus:border-primary">
+                        <option value="">همه</option>
+                        <option value="tv">سریال</option>
+                        <option value="movie">سینمایی</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="search-results" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-5 min-h-[50vh]">
+                <div class="col-span-full flex flex-col items-center justify-center text-gray-600 opacity-50 py-20">
+                    <i class="fa-brands fa-searchengin text-7xl mb-4"></i>
+                    <p class="text-lg">نام انیمه را جستجو کنید...</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- VIEW: LIBRARY -->
+        <section id="view-library" class="page-view hidden animate-slide-up">
+            <div class="flex gap-8 mb-8 border-b border-white/10 pb-1">
+                <button onclick="UI.switchLibraryTab('favs')" id="lib-tab-favs" class="text-xl font-black text-white border-b-2 border-primary pb-3 px-2 transition-colors">علاقه‌مندی‌ها</button>
+                <button onclick="UI.switchLibraryTab('history')" id="lib-tab-history" class="text-xl font-bold text-gray-500 hover:text-gray-300 pb-3 px-2 transition-colors">تاریخچه</button>
+            </div>
+
+            <div id="lib-content-favs" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-5 animate-fade-in">
+                <!-- Favorites -->
+            </div>
+
+            <div id="lib-content-history" class="hidden grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-5 animate-fade-in">
+                <!-- History -->
+            </div>
+        </section>
+
+    </main>
+
+
+    <!-- Random Anime Floating Button -->
+    <button id="random-anime-btn"
+            onclick="App.openRandomAnime()"
+            class="fixed bottom-28 right-5 z-40 w-12 h-12 rounded-2xl bg-primary text-white flex items-center justify-center shadow-2xl shadow-primary/40 border border-white/10 hover:translate-y-1 hover:rotate-3 transition-all">
+        <i class="fa-solid fa-shuffle text-lg"></i>
+    </button>
+
+    <!-- Bottom Navigation Dock -->
+    <div class="fixed bottom-6 left-0 right-0 flex justify-center z-40 pointer-events-none">
+        <div class="glass-heavy px-6 py-3 rounded-full flex items-center gap-6 md:gap-8 shadow-2xl shadow-black/80 pointer-events-auto border border-white/10 scale-95 md:scale-100 transition-transform">
+            
+            <button onclick="Router.navigate('home')" class="nav-item active group relative w-12 h-12 flex flex-col items-center justify-center transition-all duration-300">
+                <div class="w-10 h-10 rounded-2xl bg-white/5 group-[.active]:bg-primary group-[.active]:text-white text-gray-400 flex items-center justify-center text-xl transition-all shadow-lg group-[.active]:shadow-primary/40 group-[.active]:-translate-y-3">
+                    <i class="fa-solid fa-house"></i>
+                </div>
+                <span class="absolute -bottom-2 text-[9px] font-bold opacity-0 group-[.active]:opacity-100 transition-all text-gray-300 translate-y-2 group-[.active]:translate-y-0">خانه</span>
+            </button>
+
+            <button onclick="Router.navigate('schedule')" class="nav-item group relative w-12 h-12 flex flex-col items-center justify-center transition-all duration-300">
+                <div class="w-10 h-10 rounded-2xl bg-white/5 group-[.active]:bg-primary group-[.active]:text-white text-gray-400 flex items-center justify-center text-xl transition-all shadow-lg group-[.active]:shadow-primary/40 group-[.active]:-translate-y-3">
+                    <i class="fa-solid fa-calendar-days"></i>
+                </div>
+                <span class="absolute -bottom-2 text-[9px] font-bold opacity-0 group-[.active]:opacity-100 transition-all text-gray-300 translate-y-2 group-[.active]:translate-y-0">جدول پخش</span>
+            </button>
+
+            <button onclick="Router.navigate('search')" class="nav-item group relative w-12 h-12 flex flex-col items-center justify-center transition-all duration-300">
+                <div class="w-10 h-10 rounded-2xl bg-white/5 group-[.active]:bg-primary group-[.active]:text-white text-gray-400 flex items-center justify-center text-xl transition-all shadow-lg group-[.active]:shadow-primary/40 group-[.active]:-translate-y-3">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </div>
+                <span class="absolute -bottom-2 text-[9px] font-bold opacity-0 group-[.active]:opacity-100 transition-all text-gray-300 translate-y-2 group-[.active]:translate-y-0">جستجو</span>
+            </button>
+
+            <button onclick="Router.navigate('library')" class="nav-item group relative w-12 h-12 flex flex-col items-center justify-center transition-all duration-300">
+                <div class="w-10 h-10 rounded-2xl bg-white/5 group-[.active]:bg-primary group-[.active]:text-white text-gray-400 flex items-center justify-center text-xl transition-all shadow-lg group-[.active]:shadow-primary/40 group-[.active]:-translate-y-3">
+                    <i class="fa-solid fa-bookmark"></i>
+                </div>
+                <span class="absolute -bottom-2 text-[9px] font-bold opacity-0 group-[.active]:opacity-100 transition-all text-gray-300 translate-y-2 group-[.active]:translate-y-0">کتابخانه</span>
+            </button>
+
+        </div>
+    </div>
+
+    <!-- Details Modal -->
+    <div id="modal-container" class="fixed inset-0 z-[100] translate-y-full transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)]">
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" onclick="UI.closeModal()"></div>
+        <div class="absolute inset-0 bg-[#08080a] md:rounded-t-[3rem] md:top-10 overflow-y-auto no-scrollbar shadow-2xl">
+            <button onclick="UI.closeModal()" class="fixed top-6 right-6 z-50 w-12 h-12 bg-black/30 backdrop-blur-md rounded-full flex items-center justify-center text-white border border-white/10 hover:bg-white/20 transition group">
+                <i class="fa-solid fa-xmark text-xl group-hover:rotate-90 transition-transform"></i>
+            </button>
+            <div id="modal-content" class="min-h-screen pb-32">
+                <!-- Content Injected -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Video Player Overlay -->
+    <div id="player-overlay" class="fixed inset-0 z-[150] bg-black hidden flex-col justify-center animate-fade-in opacity-0 transition-opacity duration-300">
+        <div class="w-full max-w-6xl mx-auto aspect-video bg-black relative shadow-2xl shadow-primary/20">
+            <!-- Plyr / Video Container -->
+            <div id="video-embed-container" class="w-full h-full flex items-center justify-center text-gray-500 rounded-xl overflow-hidden"></div>
+        </div>
+        <div class="p-8 text-center">
+            <h2 id="player-title" class="text-2xl font-bold mb-4 text-white"></h2>
+            <button onclick="UI.closePlayer()" class="px-8 py-3 bg-white/10 rounded-full hover:bg-white/20 transition text-white border border-white/10">بستن پخش کننده</button>
+        </div>
+    </div>
+
+    <!-- Settings / Profile Sheet -->
+    <div id="settings-sheet" class="fixed inset-0 z-[140] hidden pointer-events-none">
+        <div class="absolute inset-0 bg-black/50 backdrop-blur-sm opacity-0 transition-opacity duration-300 pointer-events-auto" onclick="UI.toggleSettings()"></div>
+        <div class="absolute bottom-0 left-0 right-0 bg-[#121215] rounded-t-[2.5rem] p-8 transform translate-y-full transition-transform duration-300 pointer-events-auto border-t border-white/10">
+            
+            <div class="w-12 h-1 bg-white/20 rounded-full mx-auto mb-8"></div>
+            
+            
+<div class="flex items-center gap-4 mb-8">
+    <img id="profile-avatar" src="https://api.dicebear.com/7.x/notionists/svg?seed=Felix" class="w-16 h-16 rounded-full border-2 border-primary/50" alt="Avatar">
+    <div>
+        <h3 id="profile-name" class="text-xl font-bold text-white">کاربر مهمان</h3>
+        <p id="profile-subtitle" class="text-sm text-gray-400">خوش آمدید به نسخه نهایی</p>
+    </div>
+</div>
+
+            <div class="grid grid-cols-3 gap-4 mb-8">
+                <div class="bg-white/5 p-4 rounded-2xl border border-white/5 text-center">
+                    <div class="text-2xl font-black text-primary mb-1" id="stat-favs">0</div>
+                    <div class="text-xs text-gray-400">علاقه‌مندی</div>
+                </div>
+                <div class="bg-white/5 p-4 rounded-2xl border border-white/5 text-center">
+                    <div class="text-2xl font-black text-accent mb-1" id="stat-history">0</div>
+                    <div class="text-xs text-gray-400">بازدید شده</div>
+                </div>
+                <div class="bg-white/5 p-4 rounded-2xl border border-white/5 text-center">
+                    <div class="text-2xl font-black text-emerald-400 mb-1" id="stat-tg">0</div>
+                    <div class="text-xs text-gray-400">انیمه روی تلگرام</div>
+                </div>
+            </div>
+
+            <h3 class="font-bold text-gray-400 text-xs tracking-widest uppercase mb-4">تنظیمات ظاهری</h3>
+            
+            <!-- Theme Colors -->
+            <div class="flex gap-4 mb-6">
+                <button onclick="UI.setTheme('indigo')" class="w-12 h-12 rounded-2xl bg-indigo-500 border-2 border-transparent focus:border-white focus:scale-110 transition shadow-lg shadow-indigo-500/30"></button>
+                <button onclick="UI.setTheme('emerald')" class="w-12 h-12 rounded-2xl bg-emerald-500 border-2 border-transparent focus:border-white focus:scale-110 transition shadow-lg shadow-emerald-500/30"></button>
+                <button onclick="UI.setTheme('rose')" class="w-12 h-12 rounded-2xl bg-rose-500 border-2 border-transparent focus:border-white focus:scale-110 transition shadow-lg shadow-rose-500/30"></button>
+                <button onclick="UI.setTheme('amber')" class="w-12 h-12 rounded-2xl bg-amber-500 border-2 border-transparent focus:border-white focus:scale-110 transition shadow-lg shadow-amber-500/30"></button>
+            </div>
+
+            <!-- Accessibility -->
+            <label class="flex items-center justify-between bg-white/5 p-4 rounded-2xl border border-white/5 cursor-pointer">
+                <div>
+                    <div class="font-bold text-sm">کاهش انیمیشن</div>
+                    <div class="text-[10px] text-gray-400">برای بهبود عملکرد در دستگاه‌های ضعیف</div>
+                </div>
+                <input type="checkbox" id="reduced-motion-toggle" onchange="UI.toggleReducedMotion(this)" class="w-5 h-5 accent-primary rounded bg-white/10 border-none">
+            </label>
+            
+            <div class="mt-8 text-center text-xs text-gray-600 font-mono flex flex-col gap-2 items-center">
+                <span>AnimeCloud Ultimate v2.5</span>
+                <button onclick="UI.installPWA()" id="install-btn" class="hidden text-[10px] bg-primary/20 text-primary px-3 py-1.5 rounded-lg border border-primary/30 hover:bg-primary hover:text-white transition">
+                    <i class="fa-solid fa-download mr-1"></i> نصب اپلیکیشن
+                </button>
+                <div id="system-health-indicator" class="flex items-center gap-2 opacity-70 bg-white/5 px-3 py-1 rounded-full border border-white/5">
+                    <span id="health-dot" class="w-2 h-2 rounded-full bg-gray-500 animate-pulse"></span>
+                    <span id="health-text">Checking System...</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed top-8 left-1/2 -translate-x-1/2 z-[200] flex items-center gap-3 px-6 py-3 rounded-full glass-heavy shadow-2xl shadow-primary/20 translate-y-[-200%] transition-transform duration-500 border border-primary/20">
+        <i id="toast-icon" class="fa-solid fa-check-circle text-primary text-lg"></i>
+        <div class="flex flex-col items-start">
+            <span id="toast-title" class="text-sm font-bold text-white">موفق</span>
+            <span id="toast-msg" class="text-[10px] text-gray-400">عملیات با موفقیت انجام شد</span>
+        </div>
+    </div>
+
+    <!-- JavaScript Application Logic -->
+    <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
+    <script>
+        /**
+         * AnimeCloud Ultimate - Core Logic
+         * Combines V1 features (Translation, Parallax) with V1.1 Architecture (Modules, Theming)
+         */
+
+        const CONFIG = {
+            tgApiBase: window.location.origin + '/api', // Dynamic API base
+            apiBase: 'https://api.jikan.moe/v4',
+            dictionary: {
+                genres: { "Action": "اکشن", "Adventure": "ماجراجویی", "Comedy": "کمدی", "Drama": "درام", "Fantasy": "فانتزی", "Sci-Fi": "علمی تخیلی", "Romance": "عاشقانه", "Mystery": "رازآلود", "Supernatural": "ماورا طبیعی" },
+                status: { "Finished Airing": "پایان یافته", "Currently Airing": "در حال پخش", "Not yet aired": "بزودی" },
+                type: { "TV": "سریالی", "Movie": "سینمایی", "OVA": "OVA" }
+            }
+        };
+
+        // Storage Class (Global for now, simpler migration)
+        class Storage {
+            static get(key, defaultVal = []) {
+                if (Auth.token && (key === 'favs' || key === 'history')) {
+                     if (key === 'favs') {
+                         return Auth.library.filter(i => i.is_favorite).map(this.hydrate);
+                     } else {
+                         return Auth.library.filter(i => i.progress).map(this.hydrate);
+                     }
+                }
+                try {
+                    return JSON.parse(localStorage.getItem(`ac_ult_${key}`)) || defaultVal;
+                } catch { return defaultVal; }
+            }
+            
+            static hydrate(libItem) {
+                return { mal_id: libItem.anime_mal_id, title: "Loading...", images: {jpg:{image_url:""}} }; 
+            }
+
+            static set(key, value) {
+                localStorage.setItem(`ac_ult_${key}`, JSON.stringify(value));
+            }
+
+            static toggleList(listName, item) {
+                let list = this.getLocal(listName);
+                const index = list.findIndex(i => i.mal_id === item.mal_id);
+                let added = false;
+                
+                if (index > -1) {
+                    list.splice(index, 1);
+                    added = false;
+                } else {
+                    list.push(item);
+                    added = true;
+                }
+                this.set(listName, list);
+
+                if (Auth.token && listName === 'favs') {
+                    Auth.updateAnime(item.mal_id, {
+                        status: 'plan_to_watch',
+                        is_favorite: added
+                    });
+                }
+                
+                return added;
+            }
+
+            static addToHistory(item) {
+                let history = this.getLocal('history');
+                history = history.filter(i => i.mal_id !== item.mal_id);
+                history.unshift(item);
+                if (history.length > 30) history.pop();
+                this.set('history', history);
+
+                if (Auth.token) {
+                    Auth.updateAnime(item.mal_id, {
+                         status: 'watching',
+                         is_favorite: false,
+                         progress_episode: "1"
+                    });
+                }
+            }
+
+            static check(listName, id) {
+                return this.getLocal(listName).some(i => i.mal_id === id);
+            }
+            
+            static getLocal(key) {
+                try {
+                    return JSON.parse(localStorage.getItem(`ac_ult_${key}`)) || [];
+                } catch { return []; }
+            }
+        }
+    </script>
+    <script src="/js/telegram.js"></script>
+    <script src="/js/api.js"></script>
+    <script src="/js/ui.js"></script>
+    <script src="/js/app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => { TelegramApp.init(); App.init(); });
+    </script>
+</body>
+</html>
